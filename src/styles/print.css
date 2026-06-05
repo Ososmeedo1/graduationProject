@@ -1,0 +1,66 @@
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .app-chrome,
+  aside,
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Modal print styles */
+  .fixed.inset-0.z-50 {
+    position: static !important;
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fixed.inset-0.z-50 > div:first-child {
+    display: none !important; /* Hide the backdrop */
+  }
+
+  .fixed.inset-0.z-50 > div:last-child {
+    position: static !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: none !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .fixed.inset-0.z-50 .flex.items-center.justify-between {
+    display: none !important; /* Hide the modal header */
+  }
+
+  .fixed.inset-0.z-50 .relative.flex-1.overflow-auto {
+    position: static !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .report-print-surface {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  .report-print-surface table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 12px !important;
+  }
+
+  .report-print-surface th,
+  .report-print-surface td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px !important;
+    white-space: normal !important;
+  }
+}

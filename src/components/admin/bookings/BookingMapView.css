@@ -1,0 +1,16 @@
+/* BookingMapView.css */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.custom-marker,
+.endpoint-marker {
+  background: transparent;
+}
+
+/* Ensure map has proper height */
+.leaflet-map-container {
+  height: 100%;
+  width: 100%;
+  min-height: 500px;
+}
