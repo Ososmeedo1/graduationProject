@@ -47,6 +47,43 @@ const LoginForm = () => {
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  // Quick login handler (auto OTP)
+  const quickLogin = async () => {
+    const email = 'admin@gmail.com';
+    const password = 'Admin@123';
+    loginFormik.setFieldValue('email', email);
+    loginFormik.setFieldValue('password', password);
+    setLoading(true);
+    try {
+      const result = await login(email, password);
+      // If backend returns debugOtp in response, use it directly
+      const otp = result && (result.debugOtp || result.otp);
+      if (otp) {
+        // Call verifyOtp automatically
+        const verifyResult = await verifyOtp(email, otp);
+        if (verifyResult && verifyResult.success) {
+          play('login');
+          toast.success(t('auth.loginSuccess', 'Login successful!'));
+          navigate('/');
+        }
+      } else if (result && result.success) {
+        play('login');
+        toast.success(t('auth.loginSuccess', 'Login successful!'));
+        navigate('/');
+      } else if (result && result.action === 'go_to_otp_page') {
+        // Fallback: show OTP screen if no OTP in response
+        play('success');
+        setEmailForOtp(email);
+        setResendTimer(30);
+        setStep(STEPS.OTP);
+      }
+    } catch (error) {
+      play('error');
+      toast.error(getAuthErrorMessage(error, t));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (step !== STEPS.OTP && step !== STEPS.RESET_OTP) return;
@@ -164,7 +201,16 @@ const LoginForm = () => {
       setLoading(true);
       try {
         const result = await login(values.email, values.password);
-        if (result && result.action === 'go_to_otp_page') {
+        const otp = result && (result.debugOtp || result.otp);
+        if (otp) {
+          // If debugOtp or otp is present in response, auto-verify
+          const verifyResult = await verifyOtp(values.email, otp);
+          if (verifyResult && verifyResult.success) {
+            play('login');
+            toast.success(t('auth.loginSuccess', 'Login successful!'));
+            navigate('/');
+          }
+        } else if (result && result.action === 'go_to_otp_page') {
           play('success');
           setEmailForOtp(values.email);
           setResendTimer(30);
@@ -398,6 +444,16 @@ const LoginForm = () => {
 
         <Button type="submit" className="w-full" isLoading={loading}>
           {t('auth.login.submit', 'Sign in')}
+        </Button>
+
+        {/* Quick Login Button */}
+        <Button
+          type="button"
+          className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white"
+          onClick={quickLogin}
+          disabled={loading}
+        >
+          {t('auth.quickLogin', 'Quick Login as Employer')}
         </Button>
       </form>
     </DirectionalWrapper>
